@@ -19,7 +19,7 @@
 import numpy as np
 # llamar a las funciones
 from funciones import func_a,func_b,func_c,func_d,func_e,func_f
-
+from graficar import graficar
 # mensaje a usuario
 print("""
 Este programa te sirve para evaluar una de las siguientes funciones:
@@ -46,33 +46,40 @@ Por favor elige una tecleando la letra (minuscula) que le corresponda:
 if choice == "a":
     eval = input ("""Elige el valor x0 que deseas evaluar
     """)
-    print("La evaluacion resultante es:", func_a(float(eval)))
+    func_aux = func_a
+    print("La evaluacion resultante es:", func_aux(float(eval)))
 elif choice == "b":
     eval = input ("""Elige el valor x0 que deseas evaluar, usando
     valores mayores o iguales 0
     """)
-    print("La evaluacion resultante es:", func_b(float(eval)))
+    func_aux = func_b
+    print("La evaluacion resultante es:", func_aux(float(eval)))
 elif choice == "c":
     eval = input ("""Elige el valor x0 que deseas evaluar, usando
     valores mayores a -0.5
     """)
-    print("La evaluacion resultante es:", func_c(float(eval)))
+    func_aux = func_c
+    print("La evaluacion resultante es:", func_aux(float(eval)))
 elif choice == "d":
     eval = input ("""Elige el valor x0 que deseas evaluar
     """)
-    print("La evaluacion resultante es:", func_d(float(eval)))
+    func_aux = func_d
+    print("La evaluacion resultante es:", func_aux(float(eval)))
 elif choice == "e":
     eval = input ("""Elige el valor x0 que deseas evaluar
     """)
-    print("La evaluacion resultante es:", func_e(float(eval)))
+    func_aux = func_e
+    print("La evaluacion resultante es:", func_aux(float(eval)))
 elif choice == "f":
     eval = input ("""Elige el valor x0 que deseas evaluar
     """)
-    print("La evaluacion resultante es:", func_f(float(eval)))
+    func_aux = func_f
+    print("La evaluacion resultante es:", func_aux(float(eval)))
 elif choice == "i love you":
     print("i love you too!")
 else:
-    print("Por favor, ingresa un dato numerico valido")
+    print("Por favor, ingresa una opcion valida")
+    exit()
 
 # dar opcion para graficar
 plot_choice = input ("""Deseas especifizar un intervalo para graficar
@@ -80,7 +87,10 @@ la funcion que seleccionaste? (si/no)
 """)
 
 if plot_choice == "si":
-    pass
+    cota_inf = input ("Ingresa la cota inferior del intervalo")
+    cota_sup = input ("Ingresa la cota superior del intervalo")
+    a, b = float(cota_inf), float(cota_sup)
+    graficar(a, b, func_aux)
 elif plot_choice == "no":
     pass
 else:
