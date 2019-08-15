@@ -10,17 +10,18 @@ import numpy as np
 # al usuario se le pide la cota inferior "a" y la cota
 # superior "b". Ademas se tiene como argumentos "funcion" a
 # la funcion misma que se va a evaluar y la "etiqueta"
-# para exportar los datos
+# para exportar los datos con la letra correspondiente
+# a la respectiva funcion evaluada
 
 def graficar(a,b,funcion,etiqueta):
-    # crear intervalo de graficacion
+    # crear intervalo de graficacion a pasos de 0.05
     x = np.arange(a, b, 0.05)
     # realizar correspondiente evaluacion en el intervalo
     y = funcion(x)
     # escribir nombre de archivo y exportar .csv
     nombre = "funcion_" + etiqueta + ".csv"
     np.savetxt(nombre, np.c_[x,y], delimiter=",")
-    # graficar
+    # graficar y nombrar ejes
     plt.plot(x, y)
     plt.xlabel('x')
     plt.ylabel('f(x)')
