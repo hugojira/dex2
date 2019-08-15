@@ -13,11 +13,12 @@
 # f) 1/(1+x^2)
 # --------------------------------------------------------
 # posteriormente se da la opcion de graficar en un intervalo dado
-# y exportar los datos a un archivo .dat
+# y exportar los datos a un archivo .csv con la etiqueta de la funcion
+# seleccionada
 
 # librerias requeridas para que funcione el programa
 import numpy as np
-# llamar a las funciones
+# llamar a las funciones (subrutinas)
 from funciones import func_a,func_b,func_c,func_d,func_e,func_f
 from graficar import graficar
 # mensaje a usuario
@@ -77,21 +78,23 @@ elif choice == "f":
     print("La evaluacion resultante es:", func_aux(float(eval)))
 elif choice == "i love you":
     print("i love you too!")
+    exit()
 else:
     print("Por favor, ingresa una opcion valida")
     exit()
 
-# dar opcion para graficar
-plot_choice = input ("""Deseas especifizar un intervalo para graficar
-la funcion que seleccionaste? (si/no)
+# dar opcion para graficar y guardar los datos en csv
+plot_choice = input ("""Deseas especificar un intervalo para graficar
+la funcion que seleccionaste (adicionalmente se exportaran las evaluaciones
+en un archivo csv)? (si/no)
 """)
 
 if plot_choice == "si":
     cota_inf = input ("Ingresa la cota inferior del intervalo")
     cota_sup = input ("Ingresa la cota superior del intervalo")
     a, b = float(cota_inf), float(cota_sup)
-    graficar(a, b, func_aux)
+    graficar(a, b, func_aux, choice) #llamar funcion graficadora/exportadora
 elif plot_choice == "no":
-    pass
+        pass
 else:
     print("teclea 'si' o 'no', sin las comillas")
