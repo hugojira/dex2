@@ -30,8 +30,6 @@ N = input ("""Escribe el numero de particulas puntuales a distribuir
 sobre la recta
 """) # numero de particulas a distribuir
 
-print("la longitud es", L)
-print("el numero de particulas es", N)
 
 # cada vez que se distribuyen equitativamente N puntos sobre la recta,
 # se hacen N-1 divisiones iguales, entonces dividimos la recta en N-1
@@ -50,8 +48,6 @@ if int(N) == 1:
 # acercandose al origen a pasos de L/(N-1), (step), hasta terminar
  # el loop sobre N. Para numero de particulas impares la particula 1 siempre
  # estara en 0 (el origen) por acuerdo.
-
-
 
 
 posiciones = np.zeros((int(N), 2), dtype = object) # crear arreglo (N,2)
@@ -77,7 +73,6 @@ if int(N)%2==0:# *** acomodo para el caso de numero de particulas N par ***
 
 else: # *** acomodo para el caso de numero de particulas N impar ***
     for i in range(int(N)):
-        print(i)
         if (i+1)==1: # particula con etiqueta 1 va al origen
             posiciones[i, 0] = int(i + 1) # etiqueta de la particula
             posiciones[i, 1] = 0.0 # posicion de la particula
@@ -92,10 +87,17 @@ else: # *** acomodo para el caso de numero de particulas N impar ***
             #sumar step para recorrer al origen
             aux_impar = aux_impar + step
 
-# imprimir en pantalla las posiciones
-print(posiciones)
-print(type(posiciones))
-print(type(step))
+# ***** guardar resultados en una tabla *****
+guardar_choice = input ("""deseas guardar una tabla con las posiciones? (si/no)
+""")
+
+if guardar_choice == "si":
+    nombre = "longitud_" + L + "_particulas_" + N + ".csv"
+    np.savetxt(nombre, posiciones, delimiter=",")
+elif guardar_choice == "no":
+    pass
+else:
+    print("escribe 'si' o 'no', sin comillas ni acentos")
 
 # ***** graficacion de los resultados *****
 # coordenada x
@@ -109,8 +111,7 @@ for j in range(int(N)):
         etiquetas[j] = "par"
     else:
         etiquetas[j] = "impar"
-    print(etiquetas[j])
-
+    #print(etiquetas[j])
 
 
 # colores asignados, pares seran azules e impares rojos
@@ -119,7 +120,7 @@ cdict = {"impar": "red", "par": "blue"}
 fig, ax = plt.subplots()
 for g in np.unique(etiquetas):
     ix = np.where(etiquetas == g)
-    ax.scatter(x[ix], y[ix], c = cdict[g], label = g, s = 100)
+    ax.scatter(x[ix], y[ix], c = cdict[g], label = g, s = 20)
 ax.legend()
 ax.set_title("{} particulas a lo largo de la recta de longitud {}".format(N,L))
 ax.set_xlabel("x")
@@ -127,10 +128,8 @@ ax.set_ylabel("y")
 ax.grid(color='black', linestyle='-', linewidth=0.5, alpha=0.8)
 plt.show() # dar grafica en pantalla
 
-print(np.where(etiquetas=="par"))
 
 
-print(x)
-print(y)
-print(etiquetas)
-print(type(etiquetas))
+
+print("""las posiciones fueron
+""", posiciones)
