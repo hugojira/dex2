@@ -35,13 +35,15 @@ sobre la recta
 # se hacen N-1 divisiones iguales, entonces dividimos la recta en N-1
 # partes iguales lo que nos servira para ir separando las particulas.
 # Excepto para N=1, en ese caso la particula solo quedara en el origen
-step = float(L)/(float(N)-1.0)
+
+if int(N)==1:
+    pass
+else:
+    step = float(L)/(float(N)-1.0)
 
 # si el numero de particulas es 1, N=1, simplemente es una particula
-# en el origen
-if int(N) == 1:
-    pass
-# para N mayor o igual a 2:
+# en el origen.
+# Para N mayor o igual a 2:
 # hacemos un loop sobre las N particulas para asignarle sus respectivas
 # posiciones. Se iran  recorriendo hacia L/2 o -L/2
 # dependiendo de la paridad, despues se iran seguiran distribuyendo
@@ -49,8 +51,8 @@ if int(N) == 1:
  # el loop sobre N. Para numero de particulas impares la particula 1 siempre
  # estara en 0 (el origen) por acuerdo.
 
-
-posiciones = np.zeros((int(N), 2), dtype = object) # crear arreglo (N,2)
+# declarar arreglo que guardara etiquetas y posiciones
+posiciones = np.zeros((int(N), 2), dtype = object) # arreglo (N,2)
 
 # variables auxuliares que serviran para empezar a las particulas en los
 # extremos de la cuerda y luego irlas recorriendo al origen con "step"
@@ -58,7 +60,11 @@ aux_par = float(L)/2.0
 aux_impar = -float(L)/2.0
 
 
-if int(N)%2==0:# *** acomodo para el caso de numero de particulas N par ***
+if int(N)==1: # caso de una sola particula (N=1), la ponemos en el origen
+    posiciones[0, 0] = 1 # etiqueta de la particula
+    posiciones[0, 1] = 0.0 # posicion de la particula en el origen
+
+elif int(N)%2==0:# *** acomodo para el caso de numero de particulas N par ***
     for i in range(int(N)):
         if (i+1)%2==0: # particula con etiqueta par
             posiciones[i, 0] = int(i + 1) # etiqueta de la particula
