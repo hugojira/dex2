@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 # --------------------------------------------------
 
 # ------------------- Descripcion ---------------------------
-
-
-
+# programa que distribuye N particulas a lo largo de una
+# circunferencia de diametro D. Los parametros N y D son
+# pedidos a usuario por pantalla.
 # -----------------------------------------------------------
 
 
