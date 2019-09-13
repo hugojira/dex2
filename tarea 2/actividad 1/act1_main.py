@@ -46,6 +46,7 @@ Y = np.zeros((int(N), 1))
 
 
 np.random.seed(4958202) # semilla para poder hacer los numeros reproducibles
+#np.random.seed(24571)
 # generar posiciones
 for i in range(0, int(N)):
     print("la iesima es", i)
@@ -78,8 +79,8 @@ for i in range(0, int(N)):
             print("posiciones nuevas", deltax, deltay)
             j = 0
         elif j < i:
-            j += i
-            print("hola perro hola perro")
+            print("sin traslape", j)
+            j += 1
         else:
             break
 

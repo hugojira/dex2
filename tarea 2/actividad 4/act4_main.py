@@ -68,7 +68,14 @@ for i in range(0, int(N)):
             pos[contador_final, 0] = x_temp # almacenar coord x en arreglo
             pos[contador_final, 1] = y_temp # almacenar coord y en arreglo
             pos[contador_final, 2] = z_temp # almacenar coord z en arreglo
-
+            #ax = plt.axes(projection='3d')
+            #ax.scatter3D(pos[:,0], pos[:,1], pos[:,2]) #, cmap = 'Greens')
+            #titulo = str(contador_final+1) + " particulas en celca cubica de longitud " + str(L)
+            #plt.title(titulo)
+            #ax.set_xlabel("X")
+            #ax.set_ylabel("Y")
+            #ax.set_zlabel("Z")
+            #plt.show()
 
 # trasladar el centro de la celda al origen (0,0)
 pos[:,0] = pos[:,0] - float(L)/2.0 # coordenadas x
