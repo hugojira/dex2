@@ -1,7 +1,7 @@
 # autor: Hugo de Jesus Valenzuela Chaparro
 # Universidad de Sonora, septiembre 2019
 # Curso Desarrollo Experimental 2
-# ************** actividad 1 de la tarea 2: ******************
+# ************** actividad 3 de la tarea 2: ******************
 # Este codigo genera una configuracion inicial aleatoria SIN IMPEDIR traslapes
 # SISTEMA: bidimensional de particulas discos
 # UNIDADES REDUCIDAS: sigma
