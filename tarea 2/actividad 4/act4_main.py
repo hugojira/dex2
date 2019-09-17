@@ -35,7 +35,7 @@ phit = (float(DENS)*np.pi)/4.0
 sigma = 1.0
 # --------------------------------------------------------------------
 
-# escribir los parametros de corrida en un archivo
+# imprimir los parametros de corrida
 print("la concentracion reducida es", DENS)
 print("el numero de particulas es", N)
 print("el lado reducido de la celca es", boxL)
