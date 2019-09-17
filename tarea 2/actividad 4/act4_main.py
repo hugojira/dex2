@@ -3,9 +3,9 @@
 # Curso Desarrollo Experimental 2
 # ************** actividad 4 de la tarea 2: ******************
 # Este programa crea un arreglo cubico de N^3 particulas en una
-# celca cubica de lado L. Los datos N y L son dados por usuario
-# en pantalla. Cabe destacar que el numero de particulas siempre
-# sera N^3, esto para que quede un arreglo cubico perfecto.
+# celca cubica de longitud reducida boxL. Los datos DENS (concentracion reducida)
+# y N son dados por usuario en pantalla. Cabe destacar que el numero de particulas
+# siempre sera N^3, esto para que quede un arreglo cubico perfecto.
 
 # librerias necesarias para que funcione el programa
 import numpy as np
