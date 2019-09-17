@@ -27,9 +27,7 @@ DENS = input("""De la concentracion reducida
 boxL = ((1.0*float(N))/float(DENS))**(1.0/2.0)
 # fraccion en area phit = pi*DENS/4
 phit = (float(DENS)*np.pi)/4.0
-# longitud NO REDUCIDA de la celca
-#L =
-# el diametro
+# el diametro de las particulas
 sigma = 1.0
 # --------------------------------------------------------------------
 
@@ -55,18 +53,6 @@ for i in range(0, int(N)):
     # posiciones
     X[i] = deltax*boxL
     Y[i] = deltay*boxL
-    #for j in range(0, i): # loop para impedir traslapes
-        #xij = X[i] - X[j]
-        #yij = Y[i] - Y[j]
-        #print("la jota es", j)
-
-        # distancia entre centros de particulas
-        #RO = xij**2 + yij**2
-        #if RO <= sigma:
-            #print("traslape en", i, j)
-            #break # salir de loop en j y regresar a loop en i
-        #else:
-            #pass
 
 #print("las posiciones fueron", np.c_[X,Y])
 
@@ -77,3 +63,15 @@ plt.title(titulo)
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
+
+# dar opcion de guardar tabla en archivo .csv
+choice = input ("""Deseas guardar una tabla (csv) con las posiciones? (si/no)
+""")
+
+if choice == "si":
+    nombre = "ConcRed_" + DENS + "_particulas_" + N + "_2D" ".csv"
+    np.savetxt(nombre, np.c_[X, Y], delimiter=",") # guardar csv
+elif choice == "no":
+    pass
+else:
+    print("Escribe 'si' o 'no', sin comillas ni acento")

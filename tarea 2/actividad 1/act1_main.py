@@ -27,9 +27,7 @@ DENS = input("""De la concentracion reducida
 boxL = ((1.0*float(N))/float(DENS))**(1.0/2.0)
 # fraccion en area phit = pi*DENS/4
 phit = (float(DENS)*np.pi)/4.0
-# longitud NO REDUCIDA de la celca
-#L =
-# el diametro
+# el diametro de las particulas
 sigma = 1.0
 # --------------------------------------------------------------------
 
@@ -46,15 +44,12 @@ Y = np.zeros((int(N), 1))
 
 
 np.random.seed(4958202) # semilla para poder hacer los numeros reproducibles
-#np.random.seed(24571)
+#np.random.seed(10354582)
 # generar posiciones
 for i in range(0, int(N)):
-    print("la iesima es", i)
     # numeros aleatorios para generar las posiciones
     deltax = np.random.uniform(low = 0, high = 1, size = 1) - 0.5
     deltay = np.random.uniform(low = 0, high = 1, size = 1) - 0.5
-    print("el deltax fue", deltax)
-    print("el deltay fue", deltay)
     # posiciones
     X[i] = deltax*boxL
     Y[i] = deltay*boxL
@@ -63,28 +58,21 @@ for i in range(0, int(N)):
     while True: # loop para impedir traslapes
         xij = X[i] - X[j]
         yij = Y[i] - Y[j]
-        #print("la jota es", j)
 
         # distancia entre centros de particulas
         RO = xij**2 + yij**2
         if RO <= sigma and j < i:
             print("traslape en", i, j)
-            #print("se traslapo la delta x mi compa, y fue", deltax)
-            #print("se traslapo la delta y mi compa, y fue", deltay)
-            #break # salir de loop en j y regresar a loop en i
             deltax = np.random.uniform(low = 0, high = 1, size = 1) - 0.5
             deltay = np.random.uniform(low = 0, high = 1, size = 1) - 0.5
             X[i] = deltax*boxL
             Y[i] = deltay*boxL
-            print("posiciones nuevas", deltax, deltay)
+            #print("posiciones nuevas", deltax, deltay)
             j = 0
         elif j < i:
-            print("sin traslape", j)
             j += 1
         else:
             break
-
-#print("las posiciones fueron", np.c_[X,Y])
 
 # graficar
 plt.plot(X[:], Y[:], "bo")#, markersize = 1)
@@ -93,3 +81,15 @@ plt.title(titulo)
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
+
+# dar opcion de guardar tabla en archivo .csv
+choice = input ("""Deseas guardar una tabla (csv) con las posiciones? (si/no)
+""")
+
+if choice == "si":
+    nombre = "ConcRed_" + DENS + "_particulas_" + N + ".csv"
+    np.savetxt(nombre, np.c_[X, Y], delimiter=",") # guardar csv
+elif choice == "no":
+    pass
+else:
+    print("Escribe 'si' o 'no', sin comillas ni acento")
