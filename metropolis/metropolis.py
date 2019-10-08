@@ -1,5 +1,5 @@
 # autor: Hugo de Jesus Valenzuela Chaparro
-# Universidad de Sonora, septiembre 2019
+# Universidad de Sonora, septiembre-octubre 2019
 # Curso Desarrollo Experimental 2
 # ************** algoritmo de metropolis: ******************
 # SISTEMA: Sistema bidimensional monodisperso de discos duros (HD)
@@ -13,27 +13,32 @@ import matplotlib.pyplot as plt
 # funciones (o subrutinas) locales
 from conf_inic_random_2D_sin_traslapes import conf_inic_random_2D_sin_traslapes
 from energia_configuracion import energia_configuracion
+from energia_particula_i import energia_particula_i
 # ----------------------------------------------------------------
 
 # ***** Definicion de variables y parametros *****
 N = 100 # numero de particulas
+NN2 = 10000
+# matrices de configuraciones
+CX = np.zeros((int(N), int(NN2)))
+CY = np.zeros((int(N), int(NN2)))
 
 # ***** Pedir datos de entrada *****
 # numero total de configuraciones (o microestados)
-#Nstep = input ("""Escriba el numero total de configuraciones
+nstep = input ("""Escriba el numero total de configuraciones
 #""")
 # microestados necesarios para que se llegue al equilibrio
-#NENER = input ("""Escriba el numero de configuraciones que pasan hasta
+NENER = input ("""Escriba el numero de configuraciones que pasan hasta
 #que se da el equilibrio
 #""")
 # frecuencia de impresion
-#iprint = input ("""Escriba la frecuencia de impresion en pantalla deseada
+iprint = input ("""Escriba la frecuencia de impresion en pantalla deseada
 #""")
 # frecuencia de muestreo
-#isave = input ("""Escriba la frecuencia de muestreo
+isave = input ("""Escriba la frecuencia de muestreo
 #""")
 # frecuencia de correccion de paso
-#iratio = input ("""Escriba la frecuencia de correccion de paso
+iratio = input ("""Escriba la frecuencia de correccion de paso
 #""")
 # fraccion de area total que cubren las particulas
 phit = input ("""Escriba la fraccion de area total que cubren las particulas
@@ -49,6 +54,11 @@ DENS = (float(phit)*4.0)/np.pi
 boxL = ((1.0*float(N))/float(DENS))**(1.0/2.0)
 # el diametro de las particulas
 sigma = 1.0
+Rcut = boxL/2.0
+KI2 = 0
+ACATMA = 0.0
+ACM = 0.0
+
 # --- imprimir en pantalla ---
 print("El numero de particulas es:", N)
 print("La concentracion reducida es:", DENS)
@@ -56,10 +66,18 @@ print("La longitud reducida de la celda es:", boxL)
 
 # ***** Escribir datos de entrada en un archivo (dataframe) *****
 
+# ********************************************************************
+# ******************* arreglos para guardar archivos **********************
+terma = np.zeros((int(nstep), 2)) # termalizacion
+# *************************************************************************
+
 # ***** Llamar a la configuracion inicial *****
 # En este caso es aleatoria sin traslapes y con Maria Luisa
 X, Y = conf_inic_random_2D_sin_traslapes(float(N), float(DENS))
 
+# ** GUARDAR configuracion inicial en archivo externo **
+nombre_configini = "configini"+ ".csv"
+np.savetxt(nombre_configini, np.c_[X,Y], delimiter=",") # guardar csv
 # PRUEBA DE GRAFICACION CONF INICIAL
 # graficar
 plt.plot(X[:], Y[:], "bo")#, markersize = 1)
@@ -70,9 +88,10 @@ plt.ylabel("Y")
 plt.show()
 
 # ***** Correccion de largo alcance *****
-VCLA = 0.0 # en este caso no hay
+Vlrc = 0.0 # en este caso no hay
 # ***** Calculo de la energia de la configuracion inicial *****
-V_inicial = energia_configuracion(X, Y, float(N), float(DENS))
+V = energia_configuracion(X, Y, float(N), float(DENS))
+V_inicial = V + Vlrc
 print("La energia inicial de la configuracion inicial fue:", V_inicial)
 
 # ----------------------------- SEMILLA -----------------------------
@@ -89,3 +108,91 @@ else:
 
 # ********** MOVIMIENTO DE LAS PARTICULAS **********
 # ***** ITERACION SOBRE CONFIGURACIONES Y PARTICULAS *****
+
+for istep in range(0, int(nstep)):
+    for i in range(0, int(N)):
+        # posiciones viejas
+        rxiOLD = X[i]
+        ryiOLD = Y[i]
+        # *** ENERGIA DE LA i-ESIMA PARTICULA EN CONFIGURACION vieja ***
+        VOLD = energia_particula_i(rxiOLD, ryiOLD, i, X, Y, N, DENS)
+        # ************************************************************
+        # *******     Movimiento arbitrario aleatorio      *******
+        # ************************************************************
+        rxiNEW = rxiOLD + (2.0*np.random.uniform(low = 0, high = 1, size = 1) - 1.0)*DRMAX
+        ryiNEW = ryiOLD + (2.0*np.random.uniform(low = 0, high = 1, size = 1) - 1.0)*DRMAX
+        # *************************************************************
+        # ** Incluyendo condiciones periodicas **
+        rxiNEW = rxiNEW - boxL*np.around(rxiNEW/boxL)
+        ryiNEW = ryiNEW - boxL*np.around(ryiNEW/boxL)
+        # *** ENERGIA DE LA i-ESIMA PARTICULA EN CONFIGURACION nueva ***
+        VNEW = energia_particula_i(rxiNEW, ryiNEW, i, X, Y, N, DENS)
+        # ***************************************************************
+        # ******** ALGORITMO: Criterios de aceptacion o rechazo ********
+        deltaV = VNEW - VOLD
+        #print("deltaV", deltaV)
+        if deltaV < 75.0:
+            if deltaV < 0.0:
+                V = V + deltaV
+                #print("potencial menor a cero", V)
+                X[i] = rxiNEW
+                Y[i] = ryiNEW
+                ACATMA = ACATMA + 1.0
+            elif np.exp((-1.0)*deltaV) > np.random.uniform(low = 0, high = 1, size = 1):
+                V = V + deltaV
+                #print("potencial mayor a bolztman", V)
+                X[i] = rxiNEW
+                Y[i] = ryiNEW
+                ACATMA = ACATMA + 1.0
+            else:
+                pass
+        else:
+            ACM = ACM + 1.0
+        # ***************************************************************
+    # ** Guardando energia/particula de la configuracion (termalizacion) *
+    VN = (V + Vlrc)/float(N)
+    terma[istep, 0] = istep
+    terma[istep, 1] = VN
+
+    # ** Verificando si ajusta el desplazamiento DRMAX **
+    if int(istep) % int(iratio) == 0:
+        ratio = ACATMA/float(float(N)*float(iratio))
+
+        if ratio > 0.5:
+            DRMAX = DRMAX*1.05
+        else:
+            DRMAX = DRMAX*0.95
+        ACATMA = 0.0
+    else:
+        pass
+    # ** Verificando si requiere escribir informacion de ejecucion **
+    if int(istep) % int(iprint) == 0:
+        print("istep, ratio, DRMAX, VN", istep, ratio, DRMAX, VN)
+    else:
+        pass
+    # ** Verificando si debe almacenar configuraciones de equilibrio **
+    if int(istep) % int(isave) == 0 and int(istep) > int(NENER):
+        KI2 = KI2 + 1
+        for k in range(0, int(N)):
+            CX[k, KI2] = X[k]
+            CY[k, KI2] = Y[k]
+    else:
+        pass
+
+# ----------------------------------------------------------------------
+# ------------------ Escritura archivos externos -----------------------
+# ** termalizacion **
+nombre_terma = "termalizacion" + ".csv"
+np.savetxt(nombre_terma, terma, delimiter=",") # guardar csv
+# ** configuracion final **
+nombre_confinal = "confinal" + ".csv"
+np.savetxt(nombre_confinal, np.c_[X,Y], delimiter=",") # guardar csv
+
+# PRUEBA DE GRAFICACION CONF FINAL
+# graficar
+plt.plot(X[:], Y[:], "bo")#, markersize = 1)
+titulo = str(N) + " particulas (traslape-off) en celda cuadrada de longitud reducida " + str(boxL)
+plt.title(titulo)
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()

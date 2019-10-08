@@ -55,6 +55,5 @@ def energia_particula_i(rxi, ryi, i, X, Y, N, DENS):
                 pass
         else:
             pass
-
 # dar resultados (la energia)
     return V
