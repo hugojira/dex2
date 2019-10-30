@@ -7,18 +7,22 @@
 
 # librerias externas requeridas para que funcione el programa
 import numpy as np
-import pandas as pd
+#import pandas as pd
 import matplotlib.pyplot as plt
 # ----------------------------------------------------------------
 # funciones (o subrutinas) locales
 from conf_inic_random_2D_sin_traslapes import conf_inic_random_2D_sin_traslapes
+from conf_inic_regular_cuadrada import conf_inic_regular_cuadrada
 from energia_configuracion import energia_configuracion
 from energia_particula_i import energia_particula_i
+from GDR import GDR
+from GDR_test import GDR_test
 # ----------------------------------------------------------------
 
 # ***** Definicion de variables y parametros *****
-N = 100 # numero de particulas
+N = 10 # numero de particulas
 NN2 = 10000
+NN3 = 3500
 # matrices de configuraciones
 CX = np.zeros((int(N), int(NN2)))
 CY = np.zeros((int(N), int(NN2)))
@@ -80,16 +84,29 @@ trazadora = np.zeros((int(nstep), 2)) # particula trazadora
 # *************************************************************************
 
 # ***** Llamar a la configuracion inicial *****
-# En este caso es aleatoria sin traslapes y con Maria Luisa
-X, Y = conf_inic_random_2D_sin_traslapes(float(N), float(DENS))
-
+# En este caso es aleatoria sin traslapes y con Maria Luisa, o bidimensional
+# regular cuadrada con Maria Luisa
+choice = input ("""Eliga congifuracion aleatoria sin traslapes (1) o
+configuracion regular cuadrada (2)""")
+if int(choice) == 1:
+    X, Y = conf_inic_random_2D_sin_traslapes(float(N), float(DENS))
+elif int(choice) == 2:
+    X, Y = conf_inic_regular_cuadrada(float(N), float(DENS))
+else:
+    print("Asegurese de escribir bien, se eligio por default la opcion (1)")
+    X, Y = conf_inic_random_2D_sin_traslapes(float(N), float(DENS))
 # ** GUARDAR configuracion inicial en archivo externo **
 nombre_configini = "configini"+ ".csv"
 np.savetxt(nombre_configini, np.c_[X,Y], delimiter=",") # guardar csv
 # PRUEBA DE GRAFICACION CONF INICIAL
 # graficar
 plt.plot(X[:], Y[:], "bo")#, markersize = 1)
-titulo = str(N) + " particulas (traslape-off) en celda cuadrada de longitud reducida " + str(boxL)
+if int(choice) == 1:
+    titulo = str(N) + " particulas (traslape-off) en celda cuadrada de longitud reducida " + str(boxL)
+elif int(choice) == 2:
+    titulo = str(int(N)*int(N)) + " particulas (traslape-off) en celda cuadrada de longitud reducida " + str(boxL)
+else:
+    titulo = str(N) + " particulas (traslape-off) en celda cuadrada de longitud reducida " + str(boxL)
 plt.title(titulo)
 plt.xlabel("X")
 plt.ylabel("Y")
@@ -161,8 +178,8 @@ for istep in range(0, int(nstep)):
 
     # ** Trayectoria de la particula trazadora **
         if i == NP:
-            print("la trazadora x", X[i])
-            print("la trazadora y", Y[i])
+            #print("la trazadora x", X[i])
+            #print("la trazadora y", Y[i])
             trazadora[i_trazadora, 0] = X[i]
             trazadora[i_trazadora, 1] = Y[i]
             i_trazadora = i_trazadora + 1
@@ -193,10 +210,26 @@ for istep in range(0, int(nstep)):
     if int(istep) % int(isave) == 0 and int(istep) > int(NENER):
         KI2 = KI2 + 1
         for k in range(0, int(N)):
-            CX[k, KI2] = X[k]
-            CY[k, KI2] = Y[k]
+            CX[k, KI2 - 1] = X[k]
+            CY[k, KI2 - 1] = Y[k]
     else:
         pass
+
+# ** CALCULO de la funcion de distribucion radial **
+GDR2D = GDR_test(CX, CY, DENS, boxL, KI2, N, NN2, NN3)
+
+plt.plot(GDR2D[:, 0], GDR2D[:, 1], "bo")#, markersize = 1)
+if int(choice) == 1:
+    tituloGDR = str(N) + " particulas,celda cuadrada de longitud reducida " + str(boxL) + "GDR2D"
+elif int(choice) == 2:
+    tituloGDR = str(int(N)*int(N)) + " particulas,celda cuadrada de longitud reducida " + str(boxL) + " GDR2D"
+else:
+    tituloGDR = str(N) + " particulas,celda cuadrada de longitud reducida " + str(boxL) + "GDR2D"
+plt.title(tituloGDR)
+plt.xlabel("RT")
+plt.ylabel("GDRTA")
+plt.show()
+# --------------------------------------------------
 
 # ----------------------------------------------------------------------
 # ------------------ Escritura archivos externos -----------------------
@@ -209,12 +242,14 @@ np.savetxt(nombre_traza, trazadora, delimiter=",") # guardar csv
 # ** configuracion final **
 nombre_confinal = "confinal" + ".csv"
 np.savetxt(nombre_confinal, np.c_[X,Y], delimiter=",") # guardar csv
+# ** GDR **
+nombre_confinal = "GDR" + ".csv"
+np.savetxt(nombre_confinal, GDR2D, delimiter=",") # guardar csv
 # -----------------------------------------------------------------------
 
 # PRUEBA DE GRAFICACION CONF FINAL
 # graficar
 plt.plot(X[:], Y[:], "bo")#, markersize = 1)
-titulo = str(N) + " particulas (traslape-off) en celda cuadrada de longitud reducida " + str(boxL)
 plt.title(titulo)
 plt.xlabel("X")
 plt.ylabel("Y")

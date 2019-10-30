@@ -16,18 +16,18 @@ import numpy as np
 # N: numero de particulas
 # DENS: concentracion reducida
 
-def energia_particula_i(rxi, ryi, i, X, Y, N, DENS):
+def energia_particula_i(rxi, ryi, i, X, Y, N, boxL, Rcut):
 
 
 # ------------------- calculos preliminares ------------------------
 # lado reducido de la celda
-    boxL = ((1.0*float(N))/float(DENS))**(1.0/2.0)
+    #boxL = ((1.0*float(N))/float(DENS))**(1.0/2.0)
 # fraccion en area phit = pi*DENS/4
-    phit = (float(DENS)*np.pi)/4.0
+    #phit = (float(DENS)*np.pi)/4.0
 # distancia a partir de la cual ya es sumamente despreciable el potencial
-    Rcut = boxL/2.0
+    #Rcut = boxL/2.0
 # el diametro de las particulas
-    sigma = 1.0
+    #sigma = 1.0
 # --------------------------------------------------------------------
 
 # calibrar energia inicial a 0
