@@ -37,7 +37,7 @@ def conf_inic_regular_cuadrada(N, DENS):
 
 
 # separacion de las particulas, es L/(n-1)
-    dL = float(boxL - 1.0)/(float(N) - 1.0)
+    dL = float(boxL)/(float(N) - 1.0)
 # total de particulas que llenaran la celda cuadrada
     total_particulas = (int(N))**2
 
@@ -47,18 +47,18 @@ def conf_inic_regular_cuadrada(N, DENS):
 
 # ciclos anidados para llenar la cuadricula
     for i in range(0, int(N)):
-        x_temp = float(boxL - 1.0) - float(i)*dL # coordenada x
+        x_temp = float(boxL) - float(i)*dL # coordenada x
         contador_auxiliar = (i)*int(N)
         for j in range(0, int(N)):
             contador_final = contador_auxiliar + j
-            y_temp = float(boxL - 1.0) - float(j)*dL # coordenada y
+            y_temp = float(boxL) - float(j)*dL # coordenada y
             pos[contador_final, 0] = x_temp # almacenar coord x en arreglo
             pos[contador_final, 1] = y_temp # almacenar coord y en arreglo
 
 
 # trasladar el centro de la celda al origen (0,0)
-    pos[:,0] = pos[:,0] - float(boxL - 1.0)/2.0
-    pos[:,1] = pos[:,1] - float(boxL - 1.0)/2.0
+    pos[:,0] = pos[:,0] - float(boxL)/2.0
+    pos[:,1] = pos[:,1] - float(boxL)/2.0
     X = pos[:, 0]
     Y = pos[:, 1]
 

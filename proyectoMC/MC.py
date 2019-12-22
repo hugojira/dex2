@@ -1,23 +1,23 @@
 # autor: Hugo de Jesus Valenzuela Chaparro
-# Universidad de Sonora, septiembre-octubre 2019
+# Universidad de Sonora, septiembre-octubre-diciembre 2019
 # Curso Desarrollo Experimental 2
 # ************** algoritmo de metropolis: ******************
-# SISTEMA: Sistema bidimensional monodisperso de discos duros (HD)
+# SISTEMA: Sistema tridimensional monodisperso de esferas duras (HS)
 # UNIIDADES REDUCIDAS: sigma-beta
 
 # librerias externas requeridas para que funcione el programa
 import numpy as np
 #import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 # ----------------------------------------------------------------
 # funciones (o subrutinas) locales
-from conf_inic_random_2D_sin_traslapes import conf_inic_random_2D_sin_traslapes
-from conf_inic_random_2D_con_traslapes import conf_inic_random_2D_con_traslapes
-from conf_inic_regular_cuadrada import conf_inic_regular_cuadrada
+from conf_inic_random_3D_sin_traslapes import conf_inic_random_3D_sin_traslapes
+from conf_inic_random_3D_con_traslapes import conf_inic_random_3D_con_traslapes
 from energia_configuracion import energia_configuracion
 from energia_particula_i import energia_particula_i
 from GDR import GDR
-from GDR_test import GDR_test
 # ----------------------------------------------------------------
 
 # ***** Definicion de variables y parametros *****
@@ -27,6 +27,8 @@ NN3 = 3500
 # matrices de configuraciones
 CX = np.zeros((int(N), int(NN2)))
 CY = np.zeros((int(N), int(NN2)))
+CZ = np.zeros((int(N), int(NN2)))
+
 
 # ***** Pedir datos de entrada *****
 # numero total de configuraciones (o microestados)
@@ -57,9 +59,9 @@ DRMAX = 0.1
 
 # ***** Calculos preliminares *****
 # concentracion reducida DENS = phit*4.0/pi
-DENS = (float(phit)*4.0)/np.pi
+DENS = (float(phit)*6.0)/np.pi
 # lado reducido de la celca
-boxL = ((1.0*float(N))/float(DENS))**(1.0/2.0)
+boxL = ((1.0*float(N))/float(DENS))**(1.0/3.0)
 # el diametro de las particulas
 sigma = 1.0
 Rcut = boxL/2.0
@@ -81,41 +83,38 @@ print("Frecuencia de correccion de paso", iratio)
 # ********************************************************************
 # ******************* arreglos para guardar archivos **********************
 terma = np.zeros((int(nstep), 2)) # termalizacion
-trazadora = np.zeros((int(nstep), 2)) # particula trazadora
+trazadora = np.zeros((int(nstep), 3)) # particula trazadora
 # *************************************************************************
 
 # ***** Llamar a la configuracion inicial *****
 # En este caso es aleatoria sin traslapes y con Maria Luisa, o bidimensional
 # regular cuadrada con Maria Luisa
-choice = input ("""Eliga congifuracion aleatoria sin traslapes (1), con traslapes (2) o
-configuracion regular cuadrada (3)""")
+choice = input ("""Eliga congifuracion aleatoria sin traslapes (1), 0 con traslapes (2)""")
 if int(choice) == 1:
-    X, Y = conf_inic_random_2D_sin_traslapes(float(N), float(DENS))
+    X, Y, Z = conf_inic_random_3D_sin_traslapes(float(N), float(DENS), float(boxL))
 elif int(choice) == 2:
-    X, Y = conf_inic_random_2D_con_traslapes(float(N), float(DENS))
-elif int(choice) == 3:
-    X, Y = conf_inic_regular_cuadrada(float(N), float(DENS))
-    N = N*N
-    #print("la nueva N", N)
+    X, Y, Z = conf_inic_random_3D_con_traslapes(float(N), float(DENS), float(boxL))
 else:
     print("Asegurese de escribir bien, se eligio por default la opcion (1)")
-    X, Y = conf_inic_random_2D_sin_traslapes(float(N), float(DENS))
+    X, Y, Z= conf_inic_random_3D_sin_traslapes(float(N), float(DENS), float(boxL))
 # ** GUARDAR configuracion inicial en archivo externo **
 nombre_configini = "configini"+ ".csv"
-np.savetxt(nombre_configini, np.c_[X,Y], delimiter=",") # guardar csv
+np.savetxt(nombre_configini, np.c_[X,Y,Z], delimiter=",") # guardar csv
 # PRUEBA DE GRAFICACION CONF INICIAL
 # graficar
-plt.plot(X[:], Y[:], "bo")#, markersize = 1)
-titulo = str(N) + " particulas en celda cuadrada de longitud reducida " + str(boxL)
+ax = plt.axes(projection='3d')
+ax.scatter3D(X[:], Y[:], Z[:]) #, cmap = 'Greens')
+titulo = str(N) + " particulas en celda cubica de longitud reducida " + str(boxL)
 plt.title(titulo)
-plt.xlabel("X")
-plt.ylabel("Y")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
 plt.show()
 
 # ***** Correccion de largo alcance *****
 Vlrc = 0.0 # en este caso no hay
 # ***** Calculo de la energia de la configuracion inicial *****
-V = energia_configuracion(X, Y, int(N), boxL, Rcut)
+V = energia_configuracion(X, Y, Z, int(N), boxL, Rcut)
 V_inicial = V + Vlrc
 print("La energia inicial de la configuracion inicial fue:", V_inicial)
 
@@ -140,19 +139,22 @@ for istep in range(0, int(nstep)):
         # posiciones viejas
         rxiOLD = X[i]
         ryiOLD = Y[i]
+        rziOLD = Z[i]
         # *** ENERGIA DE LA i-ESIMA PARTICULA EN CONFIGURACION vieja ***
-        VOLD = energia_particula_i(rxiOLD, ryiOLD, i, X, Y, int(N), boxL, Rcut)
+        VOLD = energia_particula_i(rxiOLD, ryiOLD, rziOLD, i, X, Y, Z, int(N), boxL, Rcut)
         # ************************************************************
         # *******     Movimiento arbitrario aleatorio      *******
         # ************************************************************
         rxiNEW = rxiOLD + (2.0*np.random.uniform(low = 0, high = 1, size = 1) - 1.0)*DRMAX
         ryiNEW = ryiOLD + (2.0*np.random.uniform(low = 0, high = 1, size = 1) - 1.0)*DRMAX
+        rziNEW = rziOLD + (2.0*np.random.uniform(low = 0, high = 1, size = 1) - 1.0)*DRMAX
         # *************************************************************
         # ** Incluyendo condiciones periodicas **
         rxiNEW = rxiNEW - boxL*np.around(rxiNEW/boxL)
         ryiNEW = ryiNEW - boxL*np.around(ryiNEW/boxL)
+        rziNEW = rziNEW - boxL*np.around(rziNEW/boxL)
         # *** ENERGIA DE LA i-ESIMA PARTICULA EN CONFIGURACION nueva ***
-        VNEW = energia_particula_i(rxiNEW, ryiNEW, i, X, Y, int(N), boxL, Rcut)
+        VNEW = energia_particula_i(rxiNEW, ryiNEW, rziNEW, i, X, Y, Z, int(N), boxL, Rcut)
         # ***************************************************************
         # ******** ALGORITMO: Criterios de aceptacion o rechazo ********
         deltaV = VNEW - VOLD
@@ -169,6 +171,7 @@ for istep in range(0, int(nstep)):
                 #print("potencial mayor a bolztman", V)
                 X[i] = rxiNEW
                 Y[i] = ryiNEW
+                Z[i] = rziNEW
                 ACATMA = ACATMA + 1.0
             else:
                 pass
@@ -182,6 +185,7 @@ for istep in range(0, int(nstep)):
             #print("la trazadora y", Y[i])
             trazadora[i_trazadora, 0] = X[i]
             trazadora[i_trazadora, 1] = Y[i]
+            trazadora[i_trazadora, 2] = Z[i]
             i_trazadora = i_trazadora + 1
         else:
             pass
@@ -212,14 +216,15 @@ for istep in range(0, int(nstep)):
         for k in range(0, int(N)):
             CX[k, KI2 - 1] = X[k]
             CY[k, KI2 - 1] = Y[k]
+            CZ[k, KI2 - 1] = Z[k]
     else:
         pass
 
 # ** CALCULO de la funcion de distribucion radial **
-GDR2D = GDR_test(CX, CY, DENS, boxL, KI2, N, NN2, NN3)
+GDR3D = GDR(CX, CY, CZ, DENS, boxL, KI2, N, NN2, NN3)
 
-plt.plot(GDR2D[:, 0], GDR2D[:, 1], "bo")#, markersize = 1)
-tituloGDR = str(int(N)) + " particulas,celda cuadrada de longitud reducida " + str(boxL) + " GDR2D"
+plt.plot(GDR3D[:, 0], GDR3D[:, 1], "bo")#, markersize = 1)
+tituloGDR = str(int(N)) + " particulas,celda cubica de longitud reducida " + str(boxL) + " GDR2D"
 plt.title(tituloGDR)
 plt.xlabel("RT")
 plt.ylabel("GDRTA")
@@ -236,16 +241,19 @@ nombre_traza = "trazadora" + ".csv"
 np.savetxt(nombre_traza, trazadora, delimiter=",") # guardar csv
 # ** configuracion final **
 nombre_confinal = "confinal" + ".csv"
-np.savetxt(nombre_confinal, np.c_[X,Y], delimiter=",") # guardar csv
+np.savetxt(nombre_confinal, np.c_[X,Y,Z], delimiter=",") # guardar csv
 # ** GDR **
 nombre_confinal = "GDR" + ".csv"
-np.savetxt(nombre_confinal, GDR2D, delimiter=",") # guardar csv
+np.savetxt(nombre_confinal, GDR3D, delimiter=",") # guardar csv
 # -----------------------------------------------------------------------
 
 # PRUEBA DE GRAFICACION CONF FINAL
 # graficar
-plt.plot(X[:], Y[:], "bo")#, markersize = 1)
+ax = plt.axes(projection='3d')
+ax.scatter3D(X[:], Y[:], Z[:]) #, cmap = 'Greens')
+titulo = str(N) + " particulas en celda cubica de longitud reducida " + str(boxL)
 plt.title(titulo)
-plt.xlabel("X")
-plt.ylabel("Y")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
 plt.show()
