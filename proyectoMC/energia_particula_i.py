@@ -4,7 +4,7 @@
 # ************** energia particula i : ******************
 # Este codigo es una funcion que sirve como subrutina  para calcular
 # la energia en cada particula
-# SISTEMA: tridimensional de particulas esferas
+# SISTEMA: tridimensional de particulas esfericas
 # UNIDADES REDUCIDAS: sigma-beta
 
 # librerias requeridas para que funcione el programa

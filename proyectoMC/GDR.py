@@ -3,7 +3,7 @@
 # Curso Desarrollo Experimental 2
 #------------------------------------------------------------------
 # SUBRUTINA PARA CALCULAR LA FUNCION DE DISTRIBUCION RADIAL
-# A PARTIR DE LAS MATRICES DE CONFIGURACION CX, CY
+# A PARTIR DE LAS MATRICES DE CONFIGURACION CX, CY, CZ
 # SISTEMA: TRIDIMENSIONAL
 # -----------------------------------------------------------------
 

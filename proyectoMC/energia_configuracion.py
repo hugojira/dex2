@@ -4,7 +4,7 @@
 # ************** energia configuracion inicial: ******************
 # Este codigo es una funcion que sirve como subrutina  para calcular
 #
-# SISTEMA: bidimensional de particulas discos
+# SISTEMA: tridimensional de particulas esfericas
 # UNIDADES REDUCIDAS: sigma-beta
 
 # librerias requeridas para que funcione el programa
